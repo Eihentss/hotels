@@ -47,7 +47,7 @@ class ReservationController extends Controller
         }
 
         Reservation::create($request->all());
-        return redirect()->route('reservations.index');
+        return redirect()->route('apartments.index');
     }
 
     public function show(Reservation $reservation)
@@ -59,6 +59,24 @@ class ReservationController extends Controller
     {
         return Inertia::render('Reservations/Edit', compact('reservation'));
     }
+
+    public function accept($id)
+{
+    $reservation = Reservation::find($id);
+    $reservation->status = 'accepted';
+    $reservation->save();
+
+    return response()->json(['message' => 'Reservation status updated to accepted']);
+}
+
+public function decline($id)
+{
+    $reservation = Reservation::find($id);
+    $reservation->status = 'declined';
+    $reservation->save();
+
+    return response()->json(['message' => 'Reservation status updated to declined']);
+}
 
     public function update(Request $request, Reservation $reservation)
     {
@@ -78,4 +96,26 @@ class ReservationController extends Controller
 
         return redirect()->route('reservations.index');
     }
+
+    public function checkAll()
+    {
+        $reservations = Reservation::with(['apartment', 'user'])->get(); // Iekļauj saistītās modeļa datus
+        return response()->json($reservations);
+    }
+
+    public function check(Request $request)
+{
+    // Veiciet pārbaudes, lai noteiktu, vai rezervācija ir pieejama
+    // Piemēram, varat pārbaudīt, vai rezervācija ir brīva dotajām datumam
+
+    // Ja rezervācija ir pieejama, sagatavojiet informāciju, ko vēlaties parādīt skatā
+    $reservationInfo = [
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        // Citi dati, ko vēlaties parādīt skatā
+    ];
+
+    // Atgrieziet skatu ar rezervācijas informāciju
+    return Inertia::render('Reservations/Check', ['reservationInfo' => $reservationInfo]);
+}
 }

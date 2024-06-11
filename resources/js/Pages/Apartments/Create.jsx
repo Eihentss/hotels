@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBed, faBath, faUtensils, faTv } from '@fortawesome/free-solid-svg-icons';
+import toast from "react-hot-toast";
 
 const Create = ({ auth }) => {
     const { data, setData, post, errors } = useForm({
@@ -20,6 +21,7 @@ const Create = ({ auth }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        toast.success("Apartaments tika pievienots!");
 
         post('/apartments');
     };

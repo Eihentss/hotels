@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\ReservationController;
+use App\Http\Middleware\AdminMiddleware;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -21,12 +23,14 @@ Route::get('/dashboard', function () {
     Route::get('/', [ApartmentController::class, 'index'])->name('apartments.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+
+Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/', [ApartmentController::class, 'index'])->name('apartments.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    Route::get('/reservation/show', [ReservationController::class, 'check'])->name('reservations.show');
+    Route::get("/apartments/create",[ApartmentController::class,"create"])->name("apartments.create");
 
 });
 

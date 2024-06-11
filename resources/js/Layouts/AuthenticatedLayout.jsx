@@ -41,6 +41,14 @@ export default function Authenticated({ user, header, children }) {
                                             Create Hotel
                                         </NavLink>
                                     )}
+                                    {isAdmin && (
+                                        <NavLink
+                                            href={route("reservations.show")}
+                                            active={route().current("reservations.show")}
+                                        >
+                                            Check reservation
+                                        </NavLink>
+                                    )}
                                 </div>
                             </div>
 
@@ -122,9 +130,28 @@ export default function Authenticated({ user, header, children }) {
 
                     <div className={(showingNavigationDropdown ? "block" : "hidden") + " sm:hidden"}>
                         <div className="pt-2 pb-3 space-y-1">
-                            <ResponsiveNavLink href={route("dashboard")} active={route().current("dashboard")}>
-                                Dashboard
-                            </ResponsiveNavLink>
+                        <NavLink
+                                        href={route("apartments.index")}
+                                        active={route().current("apartments.index")}
+                                    >
+                                        Check Hotel
+                                    </NavLink>
+                                    {isAdmin && (
+                                        <NavLink
+                                            href={route("apartments.create")}
+                                            active={route().current("apartments.create")}
+                                        >
+                                            Create Hotel
+                                        </NavLink>
+                                    )}
+                                    {isAdmin && (
+                                        <NavLink
+                                            href={route("reservations.show")}
+                                            active={route().current("reservations.show")}
+                                        >
+                                            Check reservation
+                                        </NavLink>
+                                    )}
                         </div>
 
                         {user ? (

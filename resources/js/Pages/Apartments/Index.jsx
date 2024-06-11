@@ -9,7 +9,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { useForm } from "@inertiajs/react";
 
 const Index = ({ auth }) => {
-    const { flash, apartments } = usePage().props;
+    const { flash, apartments, reservations } = usePage().props;
     const [search, setSearch] = useState("");
     const [sortedApartments, setSortedApartments] = useState([]);
     const [sortType, setSortType] = useState("date");
@@ -71,13 +71,25 @@ const Index = ({ auth }) => {
             {calculateAverageRating(reviews)}
           </div>
         );
-      };
-
-      const handleDelete = (e, id) => {
-        e.preventDefault();
-        destroy(route("apartments.delete", { id: id }));
     };
 
+    const getReservationStatus = (apartmentId) => {
+        if (!reservations || !Array.isArray(reservations)) {
+            return ""; // Ja rezervāciju datu struktūra nav definēta vai nav masīvs
+        }
+        
+        const reservation = reservations.find(reservation => reservation.apartment_id === apartmentId);
+        if (!reservation) return ""; // Nav rezervācijas
+        if (reservation.status === "pending") return ""; // Ja rezervācija ir pending, neizvada neko
+        const status = reservation.status === "accepted" ? "Rented" : "Not Rented";
+        return `${status} (${reservation.start_date} - ${reservation.end_date})`;
+    };
+
+    const handleDelete = (e, id) => {
+        e.preventDefault();
+        destroy(route("apartments.delete", { id: id }));
+        toast.success("Apartments tika izdzēsts!");
+    };
 
     const handleSearch = (e) => {
         setSearch(e.target.value);
@@ -122,6 +134,7 @@ const Index = ({ auth }) => {
                     <h2 className="text-xl font-bold">{apartment.name}</h2>
                     <p>{apartment.description}</p>
                     <p>Price: ${apartment.price}</p>
+                    <p>Status: {getReservationStatus(apartment.id) === 'accepted' ? 'Rented' : 'Not Rented'}</p>
                     {apartment.image && (
                     <img
                         src={`/storage/image/${apartment.image}`}

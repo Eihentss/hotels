@@ -86,16 +86,16 @@ const Show = ({ apartment, auth }) => {
 
         <p className="mb-2"><span className="font-semibold">Apraksts:</span> {apartment.description}</p>
         <p className="mb-2">
-  <span className="font-semibold">Adrese:</span>{" "}
-  <a
-    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(apartment.address)}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-blue-500 hover:underline"
-  >
-    {apartment.address}
-  </a>
-</p>
+          <span className="font-semibold">Adrese:</span>{" "}
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(apartment.address)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            {apartment.address}
+          </a>
+        </p>
 
         <p className="mb-2"><span className="font-semibold">Cena no :</span> ${apartment.price} <span className="font-semibold"> par nakti </span></p>
         <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md relative">

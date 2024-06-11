@@ -86,7 +86,6 @@ class ApartmentController extends Controller
     {
         $apartment = Apartment::findOrFail($id);
         $apartment->delete();
-
-        return response()->json(['message' => 'Apartment deleted successfully'], 200);
+        return redirect()->route('apartments.index');
     }
 }
