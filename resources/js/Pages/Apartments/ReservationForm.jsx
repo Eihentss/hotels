@@ -12,12 +12,17 @@ const ReservationForm = ({ apartment, auth }) => {
         phone: '',
         start_date: '', // Iestatītā sākuma datuma vērtība uz šodienas datumu
         end_date: '', // Iestatītā beigu datuma vērtība uz šodienas datumu
-        user_id: auth.user.id,
+        user_id: auth.user ? auth.user.id : null,
         apartment_id: apartment.id
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!auth.user) {
+            toast.error("Jums jābūt ielogotam, lai iesniegtu rezervāciju.");
+            return;
+        }
 
         // Pārveidojam datuma formātu uz MySQL datuma formātu
         const formattedStartDate = new Date(data.start_date).toISOString().split('T')[0];
@@ -41,18 +46,68 @@ const ReservationForm = ({ apartment, auth }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input type="text" placeholder="Vārds" value={data.name} onChange={e => setData('name', e.target.value)} required />
-            {errors.name && <div className="text-red-600">{errors.name}</div>}
-            <input type="email" placeholder="E-pasts" value={data.email} onChange={(e) => setData('email', e.target.value)} required />
-            {errors.email && <div className="text-red-600">{errors.email}</div>}
-            <input type="number" placeholder="Tālruņa numurs" value={data.phone} onChange={(e) => setData('phone', e.target.value)} required />
-            {errors.phone && <div className="text-red-600">{errors.phone}</div>}
-            <input type="date" name="start_date" min={today} value={data.start_date} onChange={(e) => setData('start_date', e.target.value)} required />
-            {errors.start_date && <div className="text-red-600">{errors.start_date}</div>}
-            <input type="date" name="end_date" min={today} value={data.end_date} onChange={(e) => setData('end_date', e.target.value)} required />
-            {errors.end_date && <div className="text-red-600">{errors.end_date}</div>}
-            <button type="submit" className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-transform transform hover:scale-105">
+        <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 border border-gray-300 rounded-lg shadow-lg bg-white">
+            <div className="mb-4">
+                <input 
+                    type="text" 
+                    placeholder="Vārds" 
+                    value={data.name} 
+                    onChange={e => setData('name', e.target.value)} 
+                    required 
+                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.name && <div className="text-red-600 mt-2">{errors.name}</div>}
+            </div>
+            <div className="mb-4">
+                <input 
+                    type="email" 
+                    placeholder="E-pasts" 
+                    value={data.email} 
+                    onChange={(e) => setData('email', e.target.value)} 
+                    required 
+                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.email && <div className="text-red-600 mt-2">{errors.email}</div>}
+            </div>
+            <div className="mb-4">
+                <input 
+                    type="number" 
+                    placeholder="Tālruņa numurs" 
+                    value={data.phone} 
+                    onChange={(e) => setData('phone', e.target.value)} 
+                    required 
+                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.phone && <div className="text-red-600 mt-2">{errors.phone}</div>}
+            </div>
+            <div className="mb-4">
+                <input 
+                    type="date" 
+                    name="start_date" 
+                    min={today} 
+                    value={data.start_date} 
+                    onChange={(e) => setData('start_date', e.target.value)} 
+                    required 
+                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.start_date && <div className="text-red-600 mt-2">{errors.start_date}</div>}
+            </div>
+            <div className="mb-4">
+                <input 
+                    type="date" 
+                    name="end_date" 
+                    min={data.start_date} 
+                    value={data.end_date} 
+                    onChange={(e) => setData('end_date', e.target.value)} 
+                    required 
+                    className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.end_date && <div className="text-red-600 mt-2">{errors.end_date}</div>}
+            </div>
+            <button 
+                type="submit" 
+                className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-transform transform hover:scale-105"
+            >
                 Iesniegt rezervāciju
             </button>
         </form>

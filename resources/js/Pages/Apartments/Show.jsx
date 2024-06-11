@@ -9,7 +9,6 @@ import { faCheckSquare, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import ReservationForm from "./ReservationForm";
 import { faBed, faBath, faUtensils, faTv } from '@fortawesome/free-solid-svg-icons';
 
-
 const Show = ({ apartment, auth }) => {
   const [review, setReview] = useState("");
   const [rating, setRating] = useState("");
@@ -19,10 +18,11 @@ const Show = ({ apartment, auth }) => {
   const [hasReviewed, setHasReviewed] = useState(false);
 
   useEffect(() => {
-    // Check if the user has already submitted a review
-    const userHasReviewed = reviews.some(review => review.user_id === auth.user.id);
-    setHasReviewed(userHasReviewed);
-  }, [reviews, auth.user.id]);
+    if (auth.user) {
+      const userHasReviewed = reviews.some(review => review.user_id === auth.user.id);
+      setHasReviewed(userHasReviewed);
+    }
+  }, [reviews, auth.user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +40,7 @@ const Show = ({ apartment, auth }) => {
       setSubmitted(true);
       toast.success("Atsauksme iesniegta veiksmīgi!");
       setTimeout(() => setSubmitted(false), 1000000);
-      setHasReviewed(true); // Set hasReviewed to true after successful submission
+      setHasReviewed(true);
     } catch (error) {
       console.error("Error submitting review:", error);
       toast.error("Radās kļūda, iesniedzot atsauksmi.");
@@ -99,19 +99,18 @@ const Show = ({ apartment, auth }) => {
 
         <p className="mb-2"><span className="font-semibold">Cena no :</span> ${apartment.price} <span className="font-semibold"> par nakti </span></p>
         <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md relative">
-                {/* Tavs esošais kods */}
-                <h2 className="text-xl font-semibold mb-2">Rent</h2>
-                <ReservationForm apartment={apartment} auth={auth} /> {/* Iekļauj RentCalendar komponenti */}
-                {/* Tavs esošais kods */}
-            </div>
+        <h2 className="text-xl font-semibold mb-2">Rent</h2>
+          <ReservationForm apartment={apartment} auth={auth} /> {/* Iekļauj RentCalendar komponenti */}
+        </div>
         <ul className="flex space-x-4 mt-2">
           <li>
             <FontAwesomeIcon icon={apartment.bedroom ? faCheckSquare : faTimesCircle} className={apartment.bedroom ? 'text-green-900' : 'text-red-900'} />
             <span className="ml-2"><FontAwesomeIcon icon={faBed} /></span>
-            </li>
+          </li>
           <li>
             <FontAwesomeIcon icon={apartment.bathroom ? faCheckSquare : faTimesCircle} className={apartment.bathroom ? 'text-green-900' : 'text-red-900'} />
-            <span className="ml-2"><FontAwesomeIcon icon={faBath} /></span>          </li>
+            <span className="ml-2"><FontAwesomeIcon icon={faBath} /></span>
+          </li>
           <li>
             <FontAwesomeIcon icon={apartment.kitchen ? faCheckSquare : faTimesCircle} className={apartment.kitchen ? 'text-green-900' : 'text-red-900'} />
             <span className="ml-2"><FontAwesomeIcon icon={faUtensils} /></span>
@@ -137,7 +136,7 @@ const Show = ({ apartment, auth }) => {
             </li>
           ))}
         </ul>
-        {!hasReviewed && !showForm && !submitted && (
+        {auth.user && !hasReviewed && !showForm && !submitted && (
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded"
             onClick={() => setShowForm(true)}
@@ -145,7 +144,7 @@ const Show = ({ apartment, auth }) => {
             Publicēt atsauksmi
           </button>
         )}
-        {showForm && !submitted && (
+        {auth.user && showForm && !submitted && (
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block mb-2">Novērtējums:</label>
@@ -182,3 +181,4 @@ const Show = ({ apartment, auth }) => {
 };
 
 export default Show;
+
