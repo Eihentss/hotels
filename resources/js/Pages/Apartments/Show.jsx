@@ -39,7 +39,7 @@ const Show = ({ apartment, auth }) => {
       setRating("");
       setSubmitted(true);
       toast.success("Atsauksme iesniegta veiksmīgi!");
-      setTimeout(() => setSubmitted(false), 3000);
+      setTimeout(() => setSubmitted(false), 1000000);
       setHasReviewed(true); // Set hasReviewed to true after successful submission
     } catch (error) {
       console.error("Error submitting review:", error);

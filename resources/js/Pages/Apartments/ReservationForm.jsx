@@ -22,6 +22,13 @@ const ReservationForm = ({ apartment, auth }) => {
         // Pārveidojam datuma formātu uz MySQL datuma formātu
         const formattedStartDate = new Date(data.start_date).toISOString().split('T')[0];
         const formattedEndDate = new Date(data.end_date).toISOString().split('T')[0];
+
+        // Validācija: pārbaudīt vai start_date nav vecāks par end_date
+        if (new Date(formattedStartDate) > new Date(formattedEndDate)) {
+            toast.error("Sākuma datums nedrīkst būt vecāks par beigu datumu!");
+            return;
+        }
+
         const requestData = { ...data, start_date: formattedStartDate, end_date: formattedEndDate };
 
         try {
@@ -45,7 +52,9 @@ const ReservationForm = ({ apartment, auth }) => {
             {errors.start_date && <div className="text-red-600">{errors.start_date}</div>}
             <input type="date" name="end_date" min={today} value={data.end_date} onChange={(e) => setData('end_date', e.target.value)} required />
             {errors.end_date && <div className="text-red-600">{errors.end_date}</div>}
-            <button type="submit">Iesniegt rezervāciju</button>
+            <button type="submit" className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-transform transform hover:scale-105">
+                Iesniegt rezervāciju
+            </button>
         </form>
     );
 };
