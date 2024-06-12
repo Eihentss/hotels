@@ -24,6 +24,9 @@ class ReservationController extends Controller
         $request->validate([
             'apartment_id' => 'required',
             'user_id' => 'required',
+            'name' => 'required',
+            'email' => 'required|email',
+            'phone' => 'required|numeric',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
         ]);
@@ -45,6 +48,8 @@ class ReservationController extends Controller
         if ($reservation->exists()) {
             return redirect()->back()->withErrors(['apartment_id' => 'This apartment is already reserved.']);
         }
+
+        $request['status'] = 'pending';
 
         Reservation::create($request->all());
         return redirect()->route('apartments.index');
