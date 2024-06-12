@@ -14,6 +14,7 @@ const Show = ({ apartment, auth }) => {
   const [rating, setRating] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [showRentForm, setShowRentForm] = useState(false); // Stāvoklis, lai izsekotu noma formas redzamību
   const [reviews, setReviews] = useState(apartment.reviews);
   const [hasReviewed, setHasReviewed] = useState(false);
 
@@ -98,10 +99,21 @@ const Show = ({ apartment, auth }) => {
         </p>
 
         <p className="mb-2"><span className="font-semibold">Cena no :</span> ${apartment.price} <span className="font-semibold"> par nakti </span></p>
-        <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md relative">
-        <h2 className="text-xl font-semibold mb-2">Rent</h2>
-          <ReservationForm apartment={apartment} auth={auth} /> {/* Iekļauj RentCalendar komponenti */}
-        </div>
+        
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
+          onClick={() => setShowRentForm(!showRentForm)} // Pārslēdz noma formas redzamību
+        >
+          RENT
+        </button>
+        
+        {showRentForm && (
+          <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md relative">
+            <h2 className="text-xl font-semibold mb-2">Rent</h2>
+            <ReservationForm apartment={apartment} auth={auth} />
+          </div>
+        )}
+
         <ul className="flex space-x-4 mt-2">
           <li>
             <FontAwesomeIcon icon={apartment.bedroom ? faCheckSquare : faTimesCircle} className={apartment.bedroom ? 'text-green-900' : 'text-red-900'} />
@@ -120,6 +132,7 @@ const Show = ({ apartment, auth }) => {
             <span className="ml-2"><FontAwesomeIcon icon={faTv} /></span>
           </li>
         </ul>
+
         <h2 className="text-xl font-semibold mb-2">Atsauksmes:</h2>
         <p className="mb-2">
           <span className="font-semibold">Vidējais novērtējums:</span> {calculateAverageRating(reviews)}
@@ -136,44 +149,51 @@ const Show = ({ apartment, auth }) => {
             </li>
           ))}
         </ul>
-        {auth.user && !hasReviewed && !showForm && !submitted && (
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={() => setShowForm(true)}
-          >
-            Publicēt atsauksmi
-          </button>
-        )}
-        {auth.user && showForm && !submitted && (
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block mb-2">Novērtējums:</label>
-              <input
-                type="number"
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
-                className="border rounded p-1"
-                min="1"
-                max="5"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">Atsauksme:</label>
-              <textarea
-                value={review}
-                onChange={(e) => setReview(e.target.value)}
-                className="border rounded p-1"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Publicēt atsauksmi
-            </button>
-          </form>
+
+        {auth.user ? (
+          <>
+            {!hasReviewed && !showForm && !submitted && (
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={() => setShowForm(true)}
+              >
+                Publicēt atsauksmi
+              </button>
+            )}
+            {showForm && !submitted && (
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block mb-2">Novērtējums:</label>
+                  <input
+                    type="number"
+                    value={rating}
+                    onChange={(e) => setRating(e.target.value)}
+                    className="border rounded p-1"
+                    min="1"
+                    max="5"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block mb-2">Atsauksme:</label>
+                  <textarea
+                    value={review}
+                    onChange={(e) => setReview(e.target.value)}
+                    className="border rounded p-1"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  Publicēt atsauksmi
+                </button>
+              </form>
+            )}
+          </>
+        ) : (
+          <p className="text-red-500 mt-4">Lai iesniegtu atsauksmi, lūdzu, pieslēdzieties savam kontam.</p>
         )}
       </div>
     </AuthenticatedLayout>
@@ -181,4 +201,3 @@ const Show = ({ apartment, auth }) => {
 };
 
 export default Show;
-

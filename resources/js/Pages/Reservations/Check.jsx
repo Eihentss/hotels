@@ -53,7 +53,7 @@ const CheckReservation = ({ auth, apartment }) => {
                             <div className="flex-grow">
                                 <p className="font-semibold">Dzīvokļa nosaukums: {reservation.apartment.name}</p>
                                 <p className="font-semibold">Apraksts: {reservation.apartment.description}</p>
-                                <p className="font-semibold">Cena: {reservation.apartment.price}</p>
+                                <p className="font-semibold">Cena: {reservation.apartment.price}$</p>
                                 <p className="font-semibold">Sākuma datums: {reservation.start_date}</p>
                                 <p className="font-semibold">Beigu datums: {reservation.end_date}</p>
                                 <p className="font-semibold">Statuss: {reservation.status}</p>
