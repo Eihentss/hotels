@@ -66,6 +66,12 @@ class ApartmentController extends Controller
         $apartment->save();
 
         return redirect()->route('apartments.index');
+        // Servera atbilde ar rezervācijām
+        $reservations = Reservation::where('apartment_id', $apartment->id)->get();
+        return response()->json([
+            'apartments' => $apartments,
+            'reservations' => $reservations,
+        ]);
     }
 
 

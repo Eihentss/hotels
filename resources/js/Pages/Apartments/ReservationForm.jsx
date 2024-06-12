@@ -6,7 +6,7 @@ import { useForm } from '@inertiajs/react';
 const ReservationForm = ({ apartment, auth }) => {
     const today = new Date().toISOString().split('T')[0]; // Šodienas datums formātā YYYY-MM-DD
 
-    const { data, setData, post, errors } = useForm({
+    const { data, setData, post, errors, setErrors } = useForm({
         name: '',
         email: '',
         phone: '',
@@ -40,8 +40,14 @@ const ReservationForm = ({ apartment, auth }) => {
             await axios.post(route('reservations.store'), requestData);
             toast.success("Rezervācija iesniegta veiksmīgi, jāgaida apstiprinājums!");
         } catch (error) {
-            console.error("Kļūda rezervācijas iesniegšanā:", error);
-            toast.error("Kļūda rezervācijas iesniegšanā!");
+            if (error.response && error.response.status === 422) {
+                // Parāda kļūdas ziņojumu, ja apartaments jau ir rezervēts norādītajos datumos
+                toast.error(error.response.data.message);
+                setErrors(error.response.data.errors);
+            } else {
+                console.error("Kļūda rezervācijas iesniegšanā:", error);
+                toast.error("Kļūda rezervācijas iesniegšanā!");
+            }
         }
     };
 

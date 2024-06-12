@@ -8,12 +8,12 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 
 import { useForm } from "@inertiajs/react";
 
-const Index = ({ auth }) => {
-    const { flash, apartments, reservations } = usePage().props;
+const Index = ({ auth,reservation }) => {
+    const { flash, apartments } = usePage().props;
     const [search, setSearch] = useState("");
     const [sortedApartments, setSortedApartments] = useState([]);
     const [sortType, setSortType] = useState("date");
-
+    const [reservations, setReservations] = useState([]);
     const { data, setData, delete: destroy, processing, errors } = useForm({
     });
 
@@ -22,6 +22,19 @@ const Index = ({ auth }) => {
             toast.success(flash.message);
         }
     }, [flash]);
+
+    useEffect(() => {
+        fetchReservations();
+    }, []);
+
+    const fetchReservations = async () => {
+        try {
+            const response = await axios.get(route('reservations.checkAll'));
+            setReservations(response.data);
+        } catch (error) {
+            console.error('Neizdevās iegūt rezervāciju datus:', error);
+        }
+    };
 
     useEffect(() => {
         if (apartments && apartments.data && Array.isArray(apartments.data)) {
@@ -73,17 +86,7 @@ const Index = ({ auth }) => {
         );
     };
 
-    const getReservationStatus = (apartmentId) => {
-        if (!reservations || !Array.isArray(reservations)) {
-            return ""; // Ja rezervāciju datu struktūra nav definēta vai nav masīvs
-        }
-        
-        const reservation = reservations.find(reservation => reservation.apartment_id === apartmentId);
-        if (!reservation) return ""; // Nav rezervācijas
-        if (reservation.status === "pending") return ""; // Ja rezervācija ir pending, neizvada neko
-        const status = reservation.status === "accepted" ? "Rented" : "Not Rented";
-        return `${status} (${reservation.start_date} - ${reservation.end_date})`;
-    };
+
 
     const handleDelete = (e, id) => {
         e.preventDefault();
@@ -108,7 +111,6 @@ const Index = ({ auth }) => {
             <Head title="Apartments" />
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center my-4">
-
                     <input
                         type="text"
                         className="border rounded p-2 w-1/2"
@@ -129,32 +131,42 @@ const Index = ({ auth }) => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {sortedApartments.map((apartment) => (
-                <div key={apartment.id} className="border rounded p-4">
-                    <AverageRating reviews={apartment.reviews} />
-                    <h2 className="text-xl font-bold">{apartment.name}</h2>
-                    <p>{apartment.description}</p>
-                    <p>Price: ${apartment.price}</p>
-                    <p>Status: {getReservationStatus(apartment.id) === 'accepted' ? 'Rented' : 'Not Rented'}</p>
-                    {apartment.image && (
-                    <img
-                        src={`/storage/image/${apartment.image}`}
-                        alt={apartment.name}
-                        className="w-100 h-80 object-cover mt-2"
-                    />
-                    )}
-                    <Link href={`/apartments/${apartment.id}`} className="text-blue-500 mt-2 block">View Details</Link>
-                    {auth.user && auth.user.role === "admin" && (
-                        <form onSubmit={(e) => handleDelete(e, apartment.id)}>
-                            <button
-                                type="submit"
-                                className="text-red-500 mt-2 block"
-                            >
-                                Delete
-                            </button>
-                        </form>
-                    )}
-                </div>
+                    <div key={apartment.id} className="border rounded p-4">
+                        <AverageRating reviews={apartment.reviews} />
+                        <h2 className="text-xl font-bold">{apartment.name}</h2>
+                        <p>{apartment.description}</p>
+                        <p>Price: ${apartment.price}</p>
+                        {reservations.map((reservation) => {
+                            if (reservation.apartment_id === apartment.id) {
+                                return (
+                                    <p key={reservation.id} className="font-semibold">
+                                        Statuss: {reservation.status}
+                                    </p>
+                                );
+                            }
+                            return null;
+                        })}
+                        {apartment.image && (
+                            <img
+                                src={`/storage/image/${apartment.image}`}
+                                alt={apartment.name}
+                                className="w-100 h-80 object-cover mt-2"
+                            />
+                        )}
+                        <Link href={`/apartments/${apartment.id}`} className="text-blue-500 mt-2 block">View Details</Link>
+                        {auth.user && auth.user.role === "admin" && (
+                            <form onSubmit={(e) => handleDelete(e, apartment.id)}>
+                                <button
+                                    type="submit"
+                                    className="text-red-500 mt-2 block"
+                                >
+                                    Delete
+                                </button>
+                            </form>
+                        )}
+                    </div>
                 ))}
+
                 </div>
             </div>
         </AuthenticatedLayout>
